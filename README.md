@@ -5,6 +5,13 @@ This repository contains solutions and exercises for the Second Edition of The C
 
 While this repository contains the text in a [PDF format](The%20C%20Programming%20Language%20Second%20Edition.pdf), it is recommended to support and purchase the original book [here](https://www.amazon.com/Programming-Language-2nd-Brian-Kernighan/dp/0131103628) or from your bookstore of choice.
 
+**Important Note**
+This repository is primarily being used to publish my solutions from the exercises. There are many different ways to solve a problem in this language. I am using this repository as an accountability factor to continue through the book and learn C all the way through. 
+
+You may see comments throughout this code talking about elements to the language that have not been discussed in the book. I attempt to go based off only what has been shown to the reader by the authors.
+
+I imagine most of this code will be ugly to a reader for these two reasons. I will attempt to clean it up the best I can as I go along. 
+
 ### Compilation
 #### Unix-Based Systems (Linux, MacOS, etc.)
 To compile on a Unix-based system, you can type the command `cc program.c`, where "program" is the file name of the C program you are attempting to compile.
