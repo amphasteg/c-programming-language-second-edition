@@ -6,9 +6,6 @@
 
 #include <stdio.h>
 
-/* Note: At this point, the book has not gone over booleans, hence, they are not included in this program.
-   If you feel comfortable with doing so, modify this program to use a bool instead of the FOUND macro.
-*/
 #define FOUND 200
 
 int main()
