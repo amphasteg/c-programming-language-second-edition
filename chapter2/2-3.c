@@ -47,8 +47,12 @@ int htoi(char hex[]) {
 
   for (int i = length; i >= 0; i--) {
     if (hex[i] >= '0' && hex[i] <= '9') {
-      int integer = hex[i] - '0';
-      hex_total += integer * pow(16, i);
+      if (hex[i] == '0' &&
+          hex[i + 1] != 'x' &&
+          hex[i + 1] != 'X') {
+        int integer = hex[i] - '0';
+        hex_total += integer * pow(16, i);
+      }
     }
     else if (hex[i] >= 'A' && hex[i] <= 'F') {
       int integer = hex[i] - 'A' + 10;
