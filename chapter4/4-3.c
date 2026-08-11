@@ -44,6 +44,13 @@ int main(void) {
       else
         printf("error: zero divisor\n");
       break;
+    case '%':
+      op2 = pop();
+      if (op2 != 0.0)
+        push(pop() / op2);
+      else
+       printf("Error: zero modulo");
+      break;
     case '\n':
       printf("\t%.8g\n", pop());
       break;
@@ -86,13 +93,27 @@ void ungetch(int);
 /* getop: get next character or numeric operand */
 int getop(char s[]) {
   int i, c;
+  i = 0;
 
   while ((s[0] = c = getch()) == ' ' || c == '\t')
     ;
   s[1] = '\0';
-  if (!isdigit(c) && c != '.')
+  if (!isdigit(c) && c != '.' && c != '-')
     return c; /* not a number */
-  i = 0;
+  if (c == '-') {
+    int next = getch();
+    if (next == ' ' || next == '\t' || next == '\n') {
+      ungetch(next);
+      return c; //return op
+    }
+    else if (!isdigit(next) && next != '.')
+      return next; //not a number
+    else
+     s[++i] = c = next;
+  }
+  else
+    c = getch();
+
   if (isdigit(c)) /* collect integer part */
     while (isdigit(s[++i] = c = getch()))
       ;
