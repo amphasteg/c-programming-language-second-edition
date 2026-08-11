@@ -6,18 +6,15 @@
    operator and provisions for negative numbers.
 */
 
-#include <ctype.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> /* for atof() */
 
-#define MAXOP 100
-#define NUMBER '0'
+#define MAXOP 100  /* max size of operand or operator */
+#define NUMBER '0' /* signal that a number was found */
 
 int getop(char[]);
 void push(double);
-double pop();
-int getch(void);
-void ungetch(int c);
+double pop(void);
 
 /* reverse Polish calculator */
 int main(void) {
