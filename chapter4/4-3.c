@@ -20,7 +20,7 @@ int getch(void);
 void ungetch(int c);
 
 /* reverse Polish calculator */
-main() {
+int main(void) {
   int type;
   double op2;
   char s[MAXOP];
