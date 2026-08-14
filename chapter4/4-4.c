@@ -52,7 +52,7 @@ int main(void) {
     case '%':
       op2 = pop();
       if (op2 != 0.0)
-        push(pop() / op2);
+        push((int)pop() % (int)op2);
       else
        printf("Error: zero modulo");
       break;
@@ -157,8 +157,6 @@ int getop(char s[]) {
     else
      s[++i] = c = next;
   }
-  else
-    c = getch();
 
   if (isdigit(c)) /* collect integer part */
     while (isdigit(s[++i] = c = getch()))

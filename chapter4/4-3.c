@@ -47,9 +47,9 @@ int main(void) {
     case '%':
       op2 = pop();
       if (op2 != 0.0)
-        push(pop() / op2);
+        push((int)pop() % (int)op2);
       else
-       printf("Error: zero modulo");
+        printf("Error: zero modulo");
       break;
     case '\n':
       printf("\t%.8g\n", pop());
@@ -100,26 +100,26 @@ int getop(char s[]) {
   s[1] = '\0';
   if (!isdigit(c) && c != '.' && c != '-')
     return c; /* not a number */
+
   if (c == '-') {
     int next = getch();
     if (next == ' ' || next == '\t' || next == '\n') {
       ungetch(next);
-      return c; //return op
-    }
-    else if (!isdigit(next) && next != '.')
-      return next; //not a number
+      return c; // return op
+    } else if (!isdigit(next) && next != '.')
+      return next; // not a number
     else
-     s[++i] = c = next;
+      s[++i] = c = next;
   }
-  else
-    c = getch();
 
   if (isdigit(c)) /* collect integer part */
     while (isdigit(s[++i] = c = getch()))
       ;
+
   if (c == '.') /* collect fraction part */
     while (isdigit(s[++i] = c = getch()))
       ;
+
   s[i] = '\0';
   if (c != EOF)
     ungetch(c);

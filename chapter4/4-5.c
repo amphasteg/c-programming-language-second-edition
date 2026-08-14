@@ -1,13 +1,10 @@
 /*
-   Exercise 4-4
+   Exercise 4-5
 
-   Add the commands to print the top elements of
-   the stack without popping, to duplicate it,
-   and to swap the top two elements. Add a
-   command to clear the stack.
+   Add access to library functions like sin, exp
+   and pow. See <math.h> in Appendix B, Section 4.
 */
 
-#include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h> /* for atof() */
 #include <math.h>
@@ -63,7 +60,7 @@ int main(void) {
     case '%':
       op2 = pop();
       if (op2 != 0.0)
-        push(pop() / op2);
+        push((int)pop() % (int)op2);
       else
        printf("Error: zero modulo");
       break;
@@ -168,8 +165,6 @@ int getop(char s[]) {
     else
      s[++i] = c = next;
   }
-  else
-    c = getch();
 
   if (isdigit(c)) /* collect integer part */
     while (isdigit(s[++i] = c = getch()))
