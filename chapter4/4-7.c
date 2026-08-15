@@ -1,13 +1,14 @@
 /*
-   Exercise 4-6
+   Exercise 4-7
 
-   Add commands for handling variables. (It's
-   easy to provide twenty-six variables with
-   single-letter names.) Add a variable for the
-   most recently printed value.
+   Write a routine ungets(s) that will push back
+   an entire string onto the input. Should ungets
+   know about buf and bufp, or should it just use
+   ungetch?
 */
 
 #include <math.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h> /* for atof() */
 
@@ -24,6 +25,7 @@ void peek(void);
 void duplicate(void);
 void swap(void);
 void clear(void);
+void ungets(char[]);
 
 char var = '\0';
 
@@ -81,31 +83,29 @@ int main(void) {
     case 'S':
       swap();
       break;
+    case '\n':
+      printf("\t%.8g\n", pop());
+      break;
     case VARGET:
       index = var - 'a';
-      if (vars[index] != 0) {
-        printf("Pushing %c onto the stack", var);
+      printf("Pushing varibale %g from var %c (index %d)\n", vars[index], index,
+             index);
+      if (vars[index] != 0)
         push(vars[index]);
-      }
       else {
         push(0);
-        printf("Error: %c was equal to 0", var);
+        printf("Variable %c returned as 0\n", var);
       }
       break;
     case VARSET:
       if (getop(s) == VARGET) {
         int index = var - 'a';
         vars[index] = pop();
-        push(vars[index]);
-        printf("Assigning value of %g to variable %c\n",
-               vars[index], var);
+        printf("Assigning value of %g to variable %c\n (index %d)\n", vars[index],
+               var, index);
       } else
         printf(
             "Invalid assignment: \'=\' needs to be followed by \'a\'-\'z\'\n");
-      break;
-    case '\n':
-      vars[0] = pop();
-      printf("Result %.8g is assigned to var \'a\'\n", vars[0]);
       break;
 
     default:
@@ -187,6 +187,10 @@ int getop(char s[]) {
   s[1] = '\0';
   if (c >= 'a' && c <= 'z') {
     var = c;
+    int next = getch();
+    // Discard next if \n to avoid popping on empty stack
+    if (next != '\n')
+      ungetch(next);
     return VARGET;
   }
 
@@ -218,7 +222,10 @@ int getop(char s[]) {
   return NUMBER;
 }
 
+
 #define BUFSIZE 100
+
+int length(char[]);
 
 char buf[BUFSIZE]; /* buffer for ungetch */
 int bufp = 0;      /* next free position in buf */
@@ -234,4 +241,21 @@ void ungetch(int c) /* push character back on input */
     printf("ungetch: too many characters\n");
   else
     buf[bufp++] = c;
+}
+
+void ungets(char s[]) {
+  if (length(s) + bufp > BUFSIZE) {
+    printf("Ungets: too many characters");
+    return;
+  }
+
+  for (int i = 0; s[i] != '\0'; i++)
+    buf[bufp++] = s[i];
+}
+
+int length(char s[]) {
+  int i = 0;
+  while (i < BUFSIZE && s[i] != '\0')
+    i++;
+  return i;
 }
