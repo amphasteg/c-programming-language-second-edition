@@ -1,4 +1,7 @@
 # C Programming Language Second Edition
+<div align="center">
+    <img src="assets/cprogramminglang.jpg">
+</div>
 **By Brain W. Kernicghan and Dennis M. Ritchie**
 
 This repository contains solutions and exercises for the Second Edition of The C Programming Language by Brain W. Kernicghan and Dennis M. Ritchie
