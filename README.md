@@ -3,6 +3,7 @@
     <img src="assets/cprogramminglang.jpg" width="300">
     </br>
     <b>By Brain W. Kernicghan and Dennis M. Ritchie</b>
+    </br>
 </div>
 
 
