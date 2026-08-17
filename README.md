@@ -1,6 +1,7 @@
 <div align="center">
     <h1>C Programming Language Second Edition<h1>
     <img src="assets/cprogramminglang.jpg" width="300">
+    </br>
     <b>By Brain W. Kernicghan and Dennis M. Ritchie</b>
 </div>
 
