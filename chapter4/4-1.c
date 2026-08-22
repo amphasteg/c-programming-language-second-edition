@@ -14,7 +14,7 @@ int main() {
   int index;
 
   char t = 'a';
-  char str[] = {'a', 'b', 'c', 'a', 'b', 'c', 'a', 't', 'a', '8', 'i', '\0'};
+  char str[] = "abcabcata8i";
 
   index = strindex(str, t);
 
