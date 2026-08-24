@@ -4,11 +4,11 @@
     </br>
     <b>By Brain W. Kernicghan and Dennis M. Ritchie</b>
     </br>
-</div>
 
 This repository contains solutions and exercises for the Second Edition of The C Programming Language by Brain W. Kernicghan and Dennis M. Ritchie
 
 <sub>Generative AI was not used for this repository</sub>
+</div>
 
 ### Chapters
 - [Chapter 1](chapter1)
