@@ -8,6 +8,19 @@
 
 This repository contains solutions and exercises for the Second Edition of The C Programming Language by Brain W. Kernicghan and Dennis M. Ritchie
 
+<sub>Generative AI was not used for this repository</sub>
+
+### Chapters
+- [Chapter 1](chapter1)
+- [Chapter 2](chapter2)
+- [Chapter 3](chapter3)
+- [Chapter 4](chapter4)
+- [Chapter 5](chapter5)
+- [Chapter 6](chapter6)
+- [Chapter 7](chapter7)
+- [Chapter 8](chapter8)
+
+
 While this repository contains the text in a [PDF format](The%20C%20Programming%20Language%20Second%20Edition.pdf), it is recommended to support and purchase the original book [here](https://www.amazon.com/Programming-Language-2nd-Brian-Kernighan/dp/0131103628) or from your bookstore of choice.
 
 **Important Note**
@@ -35,13 +48,4 @@ After compiling, you can execute your program by typing the name of it followed 
 
 More detailed information can be found on [Microsoft's website](https://learn.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line?view=msvc-170).
 
-### Chapters
-- [Chapter 1](chapter1)
-- [Chapter 2](chapter2)
-- [Chapter 3](chapter3)
-- [Chapter 4](chapter4)
-- [Chapter 5](chapter5)
-- [Chapter 6](chapter6)
-- [Chapter 7](chapter7)
-- [Chapter 8](chapter8)
 
