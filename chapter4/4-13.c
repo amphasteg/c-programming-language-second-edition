@@ -3,6 +3,11 @@
 
   Write a recursive version of the function
   reverse(s), which reverses the string s in place.
+
+  NOTE: A helper function would be faster, however,
+  this problem only asked for one function that
+  performs the reversal. I avoided using a static
+  variable, as that felt like cheating.
 */
 
 #include <stddef.h>
