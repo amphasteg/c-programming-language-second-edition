@@ -9,27 +9,31 @@
  * (Chapter 4).
  *
  * This file only implements strindex. Check the
- * other files in this folder for the other 
+ * other files in this folder for the other
  * functions.
-*/
+ */
 
 #include <stdio.h>
 
 #define LEN 1000
 
-int strindex(char* src, char* searchfor);
+int strindex(char *src, char *searchfor);
 
 int main() {
+  char *string = "This is a string";
+  char *search = "is";
 
+  printf("%d\n", strindex(string, search));
 }
 
-int strindex(char* source, char* searchfor) {
-  int i;
-  while (*source++) {
-    for (i = 0; *(searchfor + i) != '\0' && *source == *(searchfor + i); i++)
+int strindex(char *source, char *searchfor) {
+  int i, j;
+  for (i = 0; *(source + i); i++) {
+    for (j = 0; *(searchfor + j) != '\0' && *(source + i) == *(searchfor + j);
+         j++)
       ;
-    if (i > 0 && *(searchfor + i))
+    if (j > 0 && *(searchfor + j))
       return i;
   }
-    return -1;
+  return -1;
 }
