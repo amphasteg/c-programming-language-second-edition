@@ -24,6 +24,7 @@ int numcmp(char *, char *);
 int fstrcmp(char *, char *);
 // Wrapper strcmp
 int wstrcmp(char *, char *);
+void dstrcpy(char *, char *);
 
 int directory = 0;
 
@@ -46,6 +47,9 @@ int main(int argc, char *argv[]) {
       printf("Folding\n");
       fold = 1;
       break;
+    case 'd':
+      directory = 1;
+      break;
     }
   }
 
@@ -57,7 +61,7 @@ int main(int argc, char *argv[]) {
       comp = (int (*)(void *, void *))numcmp;
     else
       comp = ((int (*)(void *, void *))(
-          fold ? fstrcmp : strcmp));
+          fold ? fstrcmp : wstrcmp));
 
     qusort((void **)lineptr, 0, nlines - 1, comp);
 
@@ -164,8 +168,6 @@ int numcmp(char *s1, char *s2) {
     return 0;
 }
 
-void dstrcpy(char *, char *);
-
 int wstrcmp(char *s1, char *s2) {
   if (!directory) {
     return strcmp(s1, s2);
@@ -180,7 +182,7 @@ int wstrcmp(char *s1, char *s2) {
   return strcmp(c1, c2);
 }
 
-void dstrycpy(char *s, char *d) {
+void dstrcpy(char *s, char *d) {
   while (*s++)
     if (!isdigit(*s) && !(*s > 'a' || *s > 'z') &&
         !(*s > 'A' && *s < 'Z') && (*s != ' '))
@@ -204,7 +206,7 @@ int fstrcmp(char *s1, char *s2) {
   for (int i = 0; *(c2 + i); i++)
     *(c2 + i) = toupper(*(c2 + i));
 
-  return strcmp(c1, c2);
+  return wstrcmp(c1, c2);
 }
 
 #define ALLOCSIZE 10000
