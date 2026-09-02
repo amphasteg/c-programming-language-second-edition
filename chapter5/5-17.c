@@ -214,32 +214,26 @@ int field_strcmp(char *s1, char *s2) {
          *(s2 + start2 + end2) != '\0')
     end2++;
 
-  printf("start1=%d end1=%d start2=%d end2=%d\n",
-         start1, end1, start2, end2);
-  char *c1 = alloc(end1 + 1);
-  char *c2 = alloc(end2 + 1);
+  char temp1 = *(s1 + start1 + end1);
+  char temp2 = *(s2 + start2 + end2);
+  *(s1 + start1 + end1) = '\0';
+  *(s2 + start2 + end2) = '\0';
 
-  s1 += start1;
-  *(s1 + end1 + 1) = '\0';
-  s2 += start2;
-  *(s2 + end2 + 1) = '\0';
+  printf("Comparing fields c1=%s and c2=%s\n", s1+start1,
+         s2 + start2);
 
-  // TODO undo this pointer stuff cause it
-  // destroys everything
-  strcpy(c1, s1);
-  printf("c1 = %s", c1);
-  strcpy(c2, s2);
-  printf(" c2 = %s\n", c2);
-
-  printf("Comparing fields c1=%s and c2=%s\n", c1,
-         c2);
-
+  int result;
   if (numeric)
-    return numcmp(c1, c2);
-  if (fold)
-    return fstrcmp(c1, c2);
+    result = numcmp(s1 + start1, s2 + start2);
+  else if (fold)
+    result = fstrcmp(s1 + start1, s2 + start2);
+  else
+    result = strcmp(s2 + start1, s2 + start2);
 
-  return strcmp(c1, c2);
+  *(s1 + start1 + end1) = temp1;
+  *(s2 + start2 + end2) = temp2;
+
+  return result;
 }
 
 int wstrcmp(char *s1, char *s2) {
