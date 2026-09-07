@@ -26,10 +26,24 @@ int main(void) {
   while (gettoken() != EOF) {
     strcpy(out, token);
     while ((type = gettoken()) != '\n')
-      if (type == PARENS || type == BRACKETS)
+      if (type == PARENS) {
+        if (out[0] == '*') {
+          sprintf(temp, "(%s)", out);
+          strcpy(out, temp);
+        }
+
         strcat(out, token);
+      }
+      else if (type == BRACKETS) {
+        if (out[0] == '*') {
+          sprintf(temp, "(%s)", out);
+          strcpy(out, temp);
+        }
+        sprintf(temp, "[%s]", token);
+        strcat(out, temp);
+      }
       else if (type == '*') {
-        sprintf(temp, "(*%s)", out);
+        sprintf(temp, "*%s", out);
         strcpy(out, temp);
       } else if (type == NAME) {
         sprintf(temp, "%s %s", token, out);
