@@ -20,13 +20,13 @@ char datatype[MAXTOKEN];
 char out[1000];
 
 int main(void) {
-  int type; 
+  int type;
   char temp[MAXTOKEN];
 
-  while (gettoken() != EOF ) {
+  while (gettoken() != EOF) {
     strcpy(out, token);
     while ((type = gettoken()) != '\n')
-      if (type == PARENS || type || BRACKETS)
+      if (type == PARENS || type == BRACKETS)
         strcat(out, token);
       else if (type == '*') {
         sprintf(temp, "(*%s)", out);
@@ -34,8 +34,9 @@ int main(void) {
       } else if (type == NAME) {
         sprintf(temp, "%s %s", token, out);
         strcpy(out, temp);
-      } else 
-        printf("Invalid input at %s\n", token);      
+      } else
+        printf("Invalid input at %s\n", token);
+    printf("%s\n", out);
   }
 }
 
