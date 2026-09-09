@@ -1,10 +1,10 @@
 /*
- * Exercise 5-14
+ * Exercise 5-16
  *
- * Modify the sort program to handle a -r flag,
- * which indicates sorting in reverse
- * (decreasing order. Be sure that -r works with
- * -n.
+ * Add the -d ("directory-order") option, which
+ * make comparisons only on letters, numbers and
+ * blanks. Make sure it works in conjunction with
+ * -f.
  */
 
 #include <ctype.h>

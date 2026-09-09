@@ -1,10 +1,12 @@
 /*
- * Exercise 5-14
+ * Exercise 5-17
  *
- * Modify the sort program to handle a -r flag,
- * which indicates sorting in reverse
- * (decreasing order. Be sure that -r works with
- * -n.
+ * Add a field-searching capability, so sorting
+ * may be done on fields within liens, each field
+ * sorted according to an independent set of
+ * options. (The index for this book was sorted
+ * with -df for the index category and -n for the
+ * page numbers.)
  */
 
 #include <ctype.h>
@@ -219,8 +221,8 @@ int field_strcmp(char *s1, char *s2) {
   *(s1 + start1 + end1) = '\0';
   *(s2 + start2 + end2) = '\0';
 
-  printf("Comparing fields c1=%s and c2=%s\n", s1+start1,
-         s2 + start2);
+  printf("Comparing fields c1=%s and c2=%s\n",
+         s1 + start1, s2 + start2);
 
   int result;
   if (numeric)

@@ -1,10 +1,10 @@
 /*
- * Exercise 5-14
+ * Exercise 5-15
  *
- * Modify the sort program to handle a -r flag,
- * which indicates sorting in reverse
- * (decreasing order. Be sure that -r works with
- * -n.
+ * Add the option -f to fold the upper and lower
+ * case together, so that case distinctions are
+ * not made during sorting; for example, a and A
+ * compare equal.
  */
 
 #include <ctype.h>
@@ -18,7 +18,8 @@ char *lineptr[MAXLINES];
 int readlines(char *lineptr[], int nlines);
 void writelines(char *lineptr[], int nlines);
 void reverse_order(char *lineptr[], int nlines);
-void qusort(void *lineptr[], int left, int right, int (*comp)(void *, void *));
+void qusort(void *lineptr[], int left, int right,
+            int (*comp)(void *, void *));
 int numcmp(char *, char *);
 int fstrcmp(char *, char *);
 
@@ -44,17 +45,19 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if ((nlines = readlines(lineptr, MAXLINES)) >= 0) {
+  if ((nlines = readlines(lineptr, MAXLINES)) >=
+      0) {
     int (*comp)(void *, void *);
 
     if (numeric)
       comp = (int (*)(void *, void *))numcmp;
     else
-      comp = ((int (*)(void *, void *))(fold ? fstrcmp : strcmp));
+      comp = ((int (*)(void *, void *))(
+          fold ? fstrcmp : strcmp));
 
     qusort((void **)lineptr, 0, nlines - 1, comp);
 
-    if (reverse) 
+    if (reverse)
       reverse_order(lineptr, nlines);
 
     writelines(lineptr, nlines);
@@ -75,10 +78,11 @@ int readlines(char *lineptr[], int maxlines) {
 
   nlines = 0;
 
-  // Changed this to one to stop reading after the user
-  // enters \n rather than ^Z
+  // Changed this to one to stop reading after the
+  // user enters \n rather than ^Z
   while ((len = get_line(line, MAXLEN)) > 1)
-    if (nlines >= maxlines || (p = alloc(len)) == NULL)
+    if (nlines >= maxlines ||
+        (p = alloc(len)) == NULL)
       return -1;
     else {
       line[len - 1] = '\0';
@@ -89,18 +93,20 @@ int readlines(char *lineptr[], int maxlines) {
 }
 
 void writelines(char *lineptr[], int nlines) {
-  int i;   
+  int i;
   for (i = 0; i < nlines; i++)
     printf("%s\n", lineptr[i]);
 }
 
 void swap(void *v[], int, int);
 
-void qusort(void *v[], int left, int right, int (*comp)(void *, void *)) {
+void qusort(void *v[], int left, int right,
+            int (*comp)(void *, void *)) {
   int i, last;
   void swap(void *v[], int, int);
-  if (left >= right) /* do nothing if array contains */
-    return;          /* fewer than two elements */
+  if (left >=
+      right) /* do nothing if array contains */
+    return;  /* fewer than two elements */
   swap(v, left, (left + right) / 2);
   last = left;
   for (i = left + 1; i <= right; i++)
@@ -129,7 +135,9 @@ void swap(void *v[], int i, int j) {
 
 int get_line(char s[], int lim) {
   int c, i;
-  for (i = 0; i < lim - 1 && (c = getchar()) != EOF && c != '\n'; ++i)
+  for (i = 0; i < lim - 1 &&
+              (c = getchar()) != EOF && c != '\n';
+       ++i)
     s[i] = c;
   if (c == '\n') {
     s[i] = c;
