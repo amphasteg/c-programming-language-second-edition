@@ -68,36 +68,57 @@ void dirdcl(void) {
   }
   if (type == '(') {
     char params[MAXTOKEN][MAXTOKEN];
+    int pointer_to[MAXTOKEN];
+    int is_const[MAXTOKEN];
     int param_len = 0;
 
-    while ((type = gettoken()) == NAME) {
-      strcpy(params[param_len++], token);
+    is_const[param_len] = 0;
+    pointer_to[param_len] = 0;
+
+    while ((type = gettoken()) == NAME ||
+           type == '*') {
+      if (type == NAME) {
+        if (strcmp(token, "const") == 0)
+          is_const[param_len] = 1;
+        else {
+          strcpy(params[param_len++], token);
+          is_const[param_len] = 0;
+          pointer_to[param_len] = 0;
+        }
+      }
+      else if (type == '*') {
+        pointer_to[param_len]++;
+      }
     }
 
     if (type != ')') {
       printf("error: missing )\n");
       return;
     } else
-      // This is required to get the next token so
-      // that we do not print a syntax error
+      // This is required to get the next token
+      // so that we do not print a syntax error
       gettoken();
 
     if (param_len == 0)
       strcat(out, "function with no params");
     else if (param_len > 1)
-      strcat(out, " function that takes params");
+      strcat(out,
+             " function that takes params: ");
     else
       strcat(out,
-             " function that takes a param of");
+             " function that takes a param: ");
 
     for (int i = 0; i < param_len; i++) {
-      if (param_len - i > 0 && i != 0)
-        strcat(out, ",");
-      strcat(out, " ");
+      if (is_const[i])
+        strcat(out, "const ");
+      for (int j = 0; j < pointer_to[i]; j++)
+        strcat(out, "pointer to ");
       strcat(out, params[i]);
+      if (param_len - i > 1)
+        strcat(out, ", ");
     }
 
-    strcat(out, " and returns");
+    strcat(out, "; and returns");
   }
 }
 
@@ -107,7 +128,8 @@ int gettoken(void) {
 
   char *p = token;
 
-  while ((c = getch()) == ' ' || c == '\t' || c == ',')
+  while ((c = getch()) == ' ' || c == '\t' ||
+         c == ',')
     ;
   if (c == '(') {
     // Prevent white space from causing errors
