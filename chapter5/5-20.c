@@ -6,8 +6,10 @@
  * on.
  */
 
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/syslimits.h>
 
 #define MAXTOKEN 100
 
@@ -29,7 +31,8 @@ int main(void) {
     out[0] = '\0';
     dcl();
     if (tokentype != '\n')
-      printf("syntax error\n");
+      printf("syntax error: token type %c\n",
+             tokentype);
     printf("%s: %s %s\n", name, out, datatype);
   }
   return 0;
@@ -64,71 +67,99 @@ void dirdcl(void) {
     strcat(out, " of");
   }
   if (type == '(') {
-    strcat(out, " function with ");
+    char params[MAXTOKEN][MAXTOKEN];
+    int param_len = 0;
+
     while ((type = gettoken()) == NAME) {
-      strcat(out, token);
+      strcpy(params[param_len++], token);
     }
 
-    int gettoken(void) {
-      int c, getch(void);
-      void ungetch(int);
+    if (type != ')') {
+      printf("error: missing )\n");
+      return;
+    } else
+      // This is required to get the next token so
+      // that we do not print a syntax error
+      gettoken();
 
-      char *p = token;
+    if (param_len == 0)
+      strcat(out, "function with no params");
+    else if (param_len > 1)
+      strcat(out, " function that takes params");
+    else
+      strcat(out,
+             " function that takes a param of");
 
-      while ((c = getch()) == ' ' || c == '\t')
-        ;
-      if (c == '(') {
-        // Prevent white space from causing errors
-        while ((c = getch()) == ' ' || c == '\t')
-          ;
-        if (c == ')') {
-          strcpy(token, "()");
-          return tokentype = PARENS;
-        } else {
-          ungetch(c);
-          return tokentype = '(';
-        }
-      } else if (c == '[') {
-        // Prevent padding around name inside
-        // brackets from causing confusion
-        //  i.e. [ amount ]
-        int added_chars = 0;
-        while ((c = getch()) != ']') {
-          if (c != ' ' && c == '\t') {
-            added_chars = 1;
-            *p++ = c;
-          } else if (added_chars &&
-                     (c = getch()) != ']') {
-            printf(
-                "Error: Names in brackets cannot "
-                "have spaces\n");
-            return -1;
-          }
-        }
-        *p = '\0';
-        return tokentype = BRACKETS;
-      } else if (isalpha(c)) {
-        for (*p++ = c; isalnum(c = getchar());)
-          *p++ = c;
-        *p = '\0';
-        ungetch(c);
-        return tokentype = NAME;
-      } else
-        return tokentype = c;
+    for (int i = 0; i < param_len; i++) {
+      if (param_len - i > 0 && i != 0)
+        strcat(out, ",");
+      strcat(out, " ");
+      strcat(out, params[i]);
     }
+
+    strcat(out, " and returns");
+  }
+}
+
+int gettoken(void) {
+  int c, getch(void);
+  void ungetch(int);
+
+  char *p = token;
+
+  while ((c = getch()) == ' ' || c == '\t' || c == ',')
+    ;
+  if (c == '(') {
+    // Prevent white space from causing errors
+    while ((c = getch()) == ' ' || c == '\t')
+      ;
+    if (c == ')') {
+      strcpy(token, "()");
+      return tokentype = PARENS;
+    } else {
+      ungetch(c);
+      return tokentype = '(';
+    }
+  } else if (c == '[') {
+    // Prevent padding around name inside
+    // brackets from causing confusion
+    //  i.e. [ amount ]
+    int added_chars = 0;
+    while ((c = getch()) != ']') {
+      if (c != ' ' && c == '\t') {
+        added_chars = 1;
+        *p++ = c;
+      } else if (added_chars &&
+                 (c = getch()) != ']') {
+        printf("Error: Names in brackets cannot "
+               "have spaces\n");
+        return -1;
+      }
+    }
+    *p = '\0';
+    return tokentype = BRACKETS;
+  } else if (isalpha(c)) {
+    for (*p++ = c; isalnum(c = getchar());)
+      *p++ = c;
+    *p = '\0';
+    ungetch(c);
+    return tokentype = NAME;
+  } else
+    return tokentype = c;
+}
 
 #define BUFSIZE 100
 
-    char buf[BUFSIZE];
-    int bufp = 0;
+char buf[BUFSIZE];
+int bufp = 0;
 
-    int getch(void) {
-      return (bufp > 0) ? buf[--bufp] : getchar();
-    }
+int getch(void) {
+  return (bufp > 0) ? buf[--bufp] : getchar();
+}
 
-    void ungetch(int c) {
-      if (bufp >= BUFSIZE)
-        printf("Ungetch: too many characters\n");
-      else
-        buf[bufp++] = c;
-    }
+void ungetch(int c) {
+  if (bufp >= BUFSIZE)
+    printf("Ungetch: too many characters\n");
+  else
+    buf[bufp++] = c;
+}
