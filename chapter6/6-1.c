@@ -6,6 +6,7 @@
  * preproccessor control lines. Write a better
  * version.
  */
+#include <_stdio.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
@@ -17,19 +18,19 @@ struct key {
   char *word;
   int count;
 } keytab[] = {
-    "auto",     0, "break",    0, "case",     0,
-    "char",     0, "const",    0, "continue", 0,
-    "default",  0, "unsigned", 0, "void",     0,
-    "volatile", 0, "while",    0,
+    "#define",  0, "#if",      0, "#ifdef",   0,
+    "#ifndef",  0, "#include", 0, "auto",     0,
+    "break",    0, "case",     0, "char",     0,
+    "const",    0, "continue", 0, "default",  0,
+    "unsigned", 0, "void",     0, "volatile", 0,
+    "while",    0,
 };
 
-// Non alphanumeric chars found in C orderd by
-// ASCII order
 const char allowed_chars[] = {
-    '#', '*', '/', '\'', '\"', '\\', '_'};
+    '#', '*', '/', '\'', '"', '\\', '_'};
 
 int getword(char *, int);
-int bin_word_search(char *, struct key *, int);
+int binsearch(char *, struct key *, int);
 
 int main(void) {
   int n;
@@ -37,9 +38,10 @@ int main(void) {
   const int keys = NKEYS(keytab);
 
   while (getword(word, MAXWORD) != EOF)
-    if (isalpha(word[0]))
-      if ((n = bin_word_search(word, keytab,
-                               keys)) >= 0)
+    if (isalpha(word[0]) ||
+        strchr(allowed_chars, word[0]) != NULL)
+      if ((n = binsearch(word, keytab, keys)) >=
+          0)
         keytab[n].count++;
   for (n = 0; n < keys; n++)
     if (keytab[n].count > 0)
@@ -49,8 +51,8 @@ int main(void) {
   return 0;
 }
 
-int bin_word_search(char *word, struct key tab[],
-                    int n) {
+int binsearch(char *word, struct key tab[],
+              int n) {
   int cond;
   int low, high, mid;
 
@@ -68,27 +70,8 @@ int bin_word_search(char *word, struct key tab[],
   return -1;
 }
 
-int bin_char_search(char c, int n) {
-  int low, high, mid;
-
-  low = 0;
-  high = n - 1;
-  while (low <= high) {
-    mid = (low + high) / 2;
-    if (c < allowed_chars[mid])
-      high = mid - 1;
-    else if (c > allowed_chars[mid])
-      low = mid + 1;
-    else
-      return mid;
-  }
-
-  return -1;
-}
-
 int getword(char *word, int lim) {
-  int c, in_str_const, getch(void),
-      is_allowed_char(int), bin_char_search(char, int);
+  int c, in_str_const, getch(void);
   void ungetch(int);
 
   char *w = word;
@@ -98,14 +81,14 @@ int getword(char *word, int lim) {
 
   if (c != EOF)
     *w++ = c;
-  if (!isalpha(c)) {
+  if (!isalpha(c) &&
+      strchr(allowed_chars, c) == NULL) {
     *w = '\0';
     return c;
   }
   for (; --lim > 0; w++)
-    if (!isalnum(*w = getch()) && *w != '_' &&
-        *w != '#' && *w != '\"' &&
-        *w != '\'' &&) {
+    if (!isalnum(*w = getch()) &&
+        strchr(allowed_chars, *w) == NULL) {
       ungetch(*w);
       break;
     }
@@ -128,5 +111,3 @@ void ungetch(int c) {
   else
     buf[bufp++] = c;
 }
-
-int is_allowed_char(int c) {}
