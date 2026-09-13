@@ -49,3 +49,23 @@ After compiling, you can execute your program by typing the name of it followed 
 More detailed information can be found on [Microsoft's website](https://learn.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line?view=msvc-170).
 
 
+### Sending EOF in a shell
+For a lot of the exercises in this book, the requirement to send EOF is neccessary after entering in a line of input. This guide will brielfy show you how to do so.
+
+#### On Unix-like systems
+Typically, on most Unix like systems, you can enter `Ctrl+D` after the last line of input to send EOF.
+
+For example:
+```console
+$ some input
+$ ^D
+```
+
+#### On Windows
+Like Unix, you can send EOF by entering `Ctrl+Z` in the terminal to send EOF.
+
+Example:
+```console
+$ some input
+$ ^Z
+```
