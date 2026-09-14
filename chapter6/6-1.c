@@ -6,7 +6,7 @@
  * preproccessor control lines. Write a better
  * version.
  */
-#include <_stdio.h>
+#include <stdio.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
