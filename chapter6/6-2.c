@@ -155,7 +155,7 @@ struct word *word_alloc(void);
 char *strndupl(char *, unsigned int);
 struct word add_word(struct word *p, char* full_word);
 
-struct first_chars add_new_word(struct first_chars *p,
+struct first_chars *add_new_word(struct first_chars *p,
                             char *full_word) {
   if (p == NULL) {
     p = first_char_alloc();
@@ -164,6 +164,10 @@ struct first_chars add_new_word(struct first_chars *p,
     p->left = p->right = NULL;
     *p->root_word = add_word(p->root_word, full_word);
   }
+  else if (strncmp(p->first_chars, full_word, n_chars) < 0)
+    p->left = add_new_word(p->left, full_word);
+
+
 }
 
 struct word add_word(struct word *p, char* full_word) {
