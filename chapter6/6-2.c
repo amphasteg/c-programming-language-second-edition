@@ -10,7 +10,6 @@
  * set from the command line.
  */
 
-#include <_stdio.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,17 +50,17 @@ int compare_type(char *, const char *[], int);
 struct first_chars *
 add_new_word(struct first_chars *p,
              char *full_word);
-void print_tree(struct first_chars*);
+void print_tree(struct first_chars *);
 
 int main(int argc, char *argv[]) {
-  struct first_chars* tree;
+  struct first_chars *tree;
 
   if (check_args(argc, argv) == -1)
     return -1;
 
   char word[MAXWORD];
 
-  while (getword(word, MAXWORD) != EOF) {
+  while (getword(word, MAXWORD) != '\n') {
     if (compare_type(word, types, 4) == 0 &&
         getword(word, MAXWORD) != EOF) {
       tree = add_new_word(tree, word);
@@ -119,7 +118,10 @@ int getword(char *word, int lim) {
   char *w = word;
 
   while (isspace(c = getch()))
-    ;
+    if (c == '\n') {
+      *w = c;
+      return word[0];
+    }
 
   if (c != EOF)
     *w++ = c;
@@ -218,12 +220,13 @@ struct first_chars *first_char_alloc(void) {
 }
 
 struct word *word_alloc(void) {
-  return (struct word *)malloc(sizeof(struct word));
+  return (struct word *)malloc(
+      sizeof(struct word));
 }
 
-void print_words(struct word* p);
+void print_words(struct word *p);
 
-void print_tree(struct first_chars* p) {
+void print_tree(struct first_chars *p) {
   if (p == NULL)
     return;
 
@@ -234,7 +237,7 @@ void print_tree(struct first_chars* p) {
   print_tree(p->right);
 }
 
-void print_words(struct word* p) {
+void print_words(struct word *p) {
   if (p == NULL)
     return;
 
