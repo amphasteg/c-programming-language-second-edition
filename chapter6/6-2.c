@@ -10,6 +10,7 @@
  * set from the command line.
  */
 
+#include <_stdio.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,8 +48,14 @@ unsigned int n_chars = 6;
 int check_args(int, char **);
 int getword(char *, int);
 int compare_type(char *, const char *[], int);
+struct first_chars *
+add_new_word(struct first_chars *p,
+             char *full_word);
+void print_tree(struct first_chars*);
 
 int main(int argc, char *argv[]) {
+  struct first_chars* tree;
+
   if (check_args(argc, argv) == -1)
     return -1;
 
@@ -57,8 +64,12 @@ int main(int argc, char *argv[]) {
   while (getword(word, MAXWORD) != EOF) {
     if (compare_type(word, types, 4) == 0 &&
         getword(word, MAXWORD) != EOF) {
+      tree = add_new_word(tree, word);
     }
   }
+
+  print_tree(tree);
+  return 0;
 }
 
 // Verifies arguments are formatted correctly
@@ -153,36 +164,43 @@ void ungetch(int c) {
 struct first_chars *first_char_alloc(void);
 struct word *word_alloc(void);
 char *strndupl(char *, unsigned int);
-struct word add_word(struct word *p, char* full_word);
+struct word *add_word(struct word *p,
+                      char *full_word);
 
-struct first_chars *add_new_word(struct first_chars *p,
-                            char *full_word) {
+struct first_chars *
+add_new_word(struct first_chars *p,
+             char *full_word) {
   if (p == NULL) {
     p = first_char_alloc();
     p->first_chars = strndupl(full_word, n_chars);
     p->root_word = NULL;
     p->left = p->right = NULL;
-    *p->root_word = add_word(p->root_word, full_word);
-  }
-  else if (strncmp(p->first_chars, full_word, n_chars) < 0)
+    p->root_word =
+        add_word(p->root_word, full_word);
+  } else if (strncmp(p->first_chars, full_word,
+                     n_chars) < 0)
     p->left = add_new_word(p->left, full_word);
+  else
+    p->right = add_new_word(p->right, full_word);
 
-
+  return p;
 }
 
-struct word add_word(struct word *p, char* full_word) {
+struct word *add_word(struct word *p,
+                      char *full_word) {
   int cond;
   if (p == NULL) {
     p = word_alloc();
-    p->word = strndupl(full_word, strlen(full_word));
+    p->word =
+        strndupl(full_word, strlen(full_word));
     p->left = p->right = NULL;
-  }
-  else if ((cond = strcmp(full_word, p->word)) < 0)
+  } else if ((cond = strcmp(full_word, p->word)) <
+             0)
     add_word(p->left, full_word);
   else
-   add_word(p->right, full_word);
+    add_word(p->right, full_word);
 
-  return *p;
+  return p;
 }
 
 char *strndupl(char *s, unsigned int size) {
@@ -195,6 +213,32 @@ char *strndupl(char *s, unsigned int size) {
 }
 
 struct first_chars *first_char_alloc(void) {
-  return (struct first_chars *) malloc(sizeof(struct first_chars));
+  return (struct first_chars *)malloc(
+      sizeof(struct first_chars));
 }
 
+struct word *word_alloc(void) {
+  return (struct word *)malloc(sizeof(struct word));
+}
+
+void print_words(struct word* p);
+
+void print_tree(struct first_chars* p) {
+  if (p == NULL)
+    return;
+
+  print_tree(p->left);
+  printf("\n");
+  print_words(p->root_word);
+  printf("\n");
+  print_tree(p->right);
+}
+
+void print_words(struct word* p) {
+  if (p == NULL)
+    return;
+
+  print_words(p->left);
+  printf("%s\n", p->word);
+  print_words(p->right);
+}
