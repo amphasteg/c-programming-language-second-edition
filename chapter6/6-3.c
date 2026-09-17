@@ -9,6 +9,7 @@
  */
 
 #include <ctype.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -16,7 +17,7 @@
 #define MAXWORD 80
 
 struct word_node {
-  struct line_list *line_occurences; 
+  struct line_list *line_occurences;
   char *word;
   struct word_node *left;
   struct word_node *right;
@@ -35,10 +36,11 @@ struct word_node *add_tree(struct word_node *,
                            char *, int);
 void print_tree(struct word_node *);
 int getword(char *, int);
-int *add_line(struct line_list *, int);
+void add_line(struct line_list *, int);
 struct word_node *talloc();
 char getch(void);
 void ungetch(char);
+int int_cmp(const void *, const void *);
 
 char buf[BUF];
 int bufp = 0;
@@ -92,22 +94,58 @@ void ungetch(char c) {
     buf[bufp++] = c;
 }
 
-struct word_node *add_tree(struct word_node *p, char *word, int line) {
+struct word_node *add_tree(struct word_node *p,
+                           char *word, int line) {
   if (p == NULL) {
     p = talloc();
     p->word = word;
-    p->line_occurences = add_line(p->line_occurences, line);
+    add_line(p->line_occurences, line);
     p->left = NULL;
     p->right = NULL;
   }
-  
+
   return p;
 }
 
 void add_line(struct line_list *list, int line) {
+  if (bsearch(&line, list->list, list->length,
+              sizeof(list->list[0]),
+              int_cmp) != NULL)
+    return;
+
   list->length++;
-  int *old_list = list->list;
-  int *new_list = malloc(sizeof(int) + list->length);
+  int *new_list =
+      malloc(sizeof(int) + list->length);
 
+  int *list_p = list->list;
 
+  for (int i = 0; i < list->length; i++) {
+    if (i + 1 >= list->length && *list_p < line) {
+      new_list[i++] = *list_p;
+      new_list[i] = line;
+    }
+    else if (*list_p < line && *(list_p+1) > line) {
+      new_list[i++] = *list_p++;
+      new_list[i] = *list_p++;
+    }
+    else
+      new_list[i] = *list_p++;
+  }
+
+  list_p = list->list;
+  list->list = new_list;
+
+  free(list_p);
+}
+
+int int_cmp(const void *p1, const void *p2) {
+  int *key = (int *) p1;
+  int *comp = (int *) p2;
+
+  if (*key < *comp)
+    return -1;
+  else if (*key > *comp)
+    return 1;
+
+  return 0;
 }
