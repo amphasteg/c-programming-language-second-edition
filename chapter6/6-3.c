@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define BUF 100
 #define MAXWORD 80
@@ -57,6 +58,8 @@ int main(void) {
     }
     tree = add_tree(tree, word, line);
   }
+
+  print_tree(tree);
 }
 
 int getword(char *word, int lim) {
@@ -96,13 +99,20 @@ void ungetch(char c) {
 
 struct word_node *add_tree(struct word_node *p,
                            char *word, int line) {
+  int cond;
+
   if (p == NULL) {
     p = talloc();
     p->word = word;
     add_line(p->line_occurences, line);
     p->left = NULL;
     p->right = NULL;
-  }
+  } else if ((cond = strcmp(p->word, word) == 0))
+    add_line(p->line_occurences, line);
+  else if (cond < 0)
+    p->left = add_tree(p->left, word, line);
+  else
+    p->right = add_tree(p->right, word, line);
 
   return p;
 }
@@ -123,12 +133,11 @@ void add_line(struct line_list *list, int line) {
     if (i + 1 >= list->length && *list_p < line) {
       new_list[i++] = *list_p;
       new_list[i] = line;
-    }
-    else if (*list_p < line && *(list_p+1) > line) {
+    } else if (*list_p < line &&
+               *(list_p + 1) > line) {
       new_list[i++] = *list_p++;
       new_list[i] = *list_p++;
-    }
-    else
+    } else
       new_list[i] = *list_p++;
   }
 
@@ -139,8 +148,8 @@ void add_line(struct line_list *list, int line) {
 }
 
 int int_cmp(const void *p1, const void *p2) {
-  int *key = (int *) p1;
-  int *comp = (int *) p2;
+  int *key = (int *)p1;
+  int *comp = (int *)p2;
 
   if (*key < *comp)
     return -1;
@@ -148,4 +157,22 @@ int int_cmp(const void *p1, const void *p2) {
     return 1;
 
   return 0;
+}
+
+void print_tree(struct word_node *tree) {
+  if (tree != NULL) {
+    print_tree(tree->left);
+    printf("Word: %s\nLine occurences:\n",
+           tree->word);
+    for (int i = 0;
+         i < tree->line_occurences->length; i++)
+      printf("%d ",
+             tree->line_occurences->list[i]);
+    printf("\n");
+    print_tree(tree->right);
+  }
+}
+
+struct word_node *talloc(void) {
+  return malloc(sizeof(struct word_node));
 }
