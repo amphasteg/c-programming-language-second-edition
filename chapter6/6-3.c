@@ -6,6 +6,14 @@
  * list of the line numbers on which it occurs.
  * Remove noise words like "the", "and", and so
  * on.
+ *
+ * NOTE: There are some accepted limitations, so
+ * that I don't spend a month perfecting a program
+ * that is just supposed to be an exercise. This
+ * program cannot handle contractions. It is also
+ * case sensitive. This means "isn't" will count
+ * as the word "isn", and "this" and "This" are
+ * counted as two seperate words.
  */
 
 #include <ctype.h>
@@ -16,6 +24,16 @@
 
 #define BUF 100
 #define MAXWORD 80
+
+#ifdef _WIN32
+#define STRDUP(word) _strdup(word)
+// This function is because windows is pretty bad
+// at handling EOF in the terminal
+#define HAS_QUIT(q) strcmp("END", q)
+#else
+#define STRDUP(word) strdup(word)
+#define HAS_QUIT(q) 0
+#endif
 
 struct word_node {
   struct line_list *line_occurences;
@@ -37,7 +55,8 @@ struct word_node *add_tree(struct word_node *,
                            char *, int);
 void print_tree(struct word_node *);
 int getword(char *, int);
-void add_line(struct line_list *, int);
+struct line_list *add_line(struct line_list *,
+                           int);
 struct word_node *talloc();
 char getch(void);
 void ungetch(char);
@@ -47,16 +66,17 @@ char buf[BUF];
 int bufp = 0;
 
 int main(void) {
-  struct word_node *tree;
+  struct word_node *tree = NULL;
   char word[MAXWORD];
-  int line = 0;
+  int line = 1;
 
-  while (getword(word, MAXWORD - 1) != EOF) {
+  while (getword(word, MAXWORD - 1) != EOF &&
+         HAS_QUIT(word) != 0) {
     if (word[0] == '\n') {
       line++;
       continue;
-    }
-    tree = add_tree(tree, word, line);
+    } else if (isalpha(word[0]))
+      tree = add_tree(tree, word, line);
   }
 
   print_tree(tree);
@@ -75,7 +95,6 @@ int getword(char *word, int lim) {
 
   if (c != EOF)
     *w++ = c;
-
   for (; --lim > 0; w++)
     if (!isalnum(*w = getch())) {
       ungetch(*w);
@@ -103,12 +122,13 @@ struct word_node *add_tree(struct word_node *p,
 
   if (p == NULL) {
     p = talloc();
-    p->word = word;
-    add_line(p->line_occurences, line);
+    p->word = STRDUP(word);
+    p->line_occurences = add_line(NULL, line);
     p->left = NULL;
     p->right = NULL;
   } else if ((cond = strcmp(p->word, word) == 0))
-    add_line(p->line_occurences, line);
+    p->line_occurences =
+        add_line(p->line_occurences, line);
   else if (cond < 0)
     p->left = add_tree(p->left, word, line);
   else
@@ -117,34 +137,38 @@ struct word_node *add_tree(struct word_node *p,
   return p;
 }
 
-void add_line(struct line_list *list, int line) {
-  if (bsearch(&line, list->list, list->length,
-              sizeof(list->list[0]),
-              int_cmp) != NULL)
-    return;
+struct line_list *add_line(struct line_list *list,
+                           int line) {
+  if (list == NULL) {
+    list = malloc(sizeof(struct line_list));
+    list->length = 1;
+    list->list = malloc(sizeof(int));
+    list->list[0] = line;
+    return list;
+  } else if (bsearch(&line, list->list,
+                     list->length,
+                     sizeof(list->list[0]),
+                     int_cmp) != NULL)
+    return list;
 
   list->length++;
   int *new_list =
-      malloc(sizeof(int) + list->length);
+      malloc(sizeof(int) * list->length);
 
   int *list_p = list->list;
 
   for (int i = 0; i < list->length; i++) {
-    if (i + 1 >= list->length && *list_p < line) {
-      new_list[i++] = *list_p;
+    // If true, we don't need to insert yet
+    if (*list_p < line && i + 1 < list->length)
+      new_list[i] = *list_p++;
+    else
       new_list[i] = line;
-    } else if (*list_p < line &&
-               *(list_p + 1) > line) {
-      new_list[i++] = *list_p++;
-      new_list[i] = *list_p++;
-    } else
-      new_list[i] = *list_p++;
   }
 
-  list_p = list->list;
+  free(list->list);
   list->list = new_list;
 
-  free(list_p);
+  return list;
 }
 
 int int_cmp(const void *p1, const void *p2) {
@@ -162,12 +186,17 @@ int int_cmp(const void *p1, const void *p2) {
 void print_tree(struct word_node *tree) {
   if (tree != NULL) {
     print_tree(tree->left);
-    printf("Word: %s\nLine occurences:\n",
+    printf("Word: %s\nLine occurences:",
            tree->word);
     for (int i = 0;
-         i < tree->line_occurences->length; i++)
-      printf("%d ",
+         i < tree->line_occurences->length; i++) {
+      printf("%d",
              tree->line_occurences->list[i]);
+      if (i + 1 < tree->line_occurences->length)
+        printf(", ");
+      else
+        printf(" ");
+    }
     printf("\n");
     print_tree(tree->right);
   }
