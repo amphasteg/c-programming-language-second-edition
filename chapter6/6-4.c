@@ -8,7 +8,6 @@
  */
 
 #include <_string.h>
-#include <arm/types.h>
 #include <ctype.h>
 #include <stddef.h>
 #include <stdio.h>
