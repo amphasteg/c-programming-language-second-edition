@@ -56,3 +56,6 @@ dkms.conf
 
 #Codebook files
 *codebook.toml
+
+#MacOS
+*.DS_STORE
