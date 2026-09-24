@@ -6,6 +6,7 @@
  */
 
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 
 void minprintf(char *fmt, ...) {
