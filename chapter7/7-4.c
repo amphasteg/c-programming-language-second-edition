@@ -8,33 +8,40 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-int minscanf(char *input, char *fmt, ...) {
+int minsscanf(char *fmt, ...) {
+  int consumed, result;
   int c;
-  char *p, *start, *end;
-  va_list *a;
+  char *p;
+  va_list a;
 
-  va_start(*a, fmt);
+  va_start(a, fmt);
 
   for (p = fmt; *p; p++) {
     if (*p != '%')
       continue;
 
-    start = p;
-    while(isblank(*(start++)))
-        ;
-
-    end = start;
-
-    while (!isblank(*(end++)))
-        ;
-
-
-
     switch (*++p) {
       case 'd':
-
+        result = scanf("%d", va_arg(a, int));
+        break;
+      case 'f':
+        result = scanf("%f", va_arg(a, double));
+        break;
+      case 's':
+        result = scanf("%s", va_arg(a, char*));
+        break;
+      case 'c':
+        result = scanf("%c", va_arg(a, int));
+        break;
+      default:
+        result = 0;
     }
+
+    if (result != EOF && result != 0)
+      consumed += result;
+    else
+     return result;
   }
 
-
+  return consumed;
 }
